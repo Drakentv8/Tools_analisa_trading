@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Crypto & Emas dengan AI (Real-time & Analisis Chart)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1a); /* Dark, deep space background */
+            color: #e0e0e0;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* Custom scrollbar for text area */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #2a2a3a;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #4a4a6a;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #6a6ab0;
+        }
+        /* Input focus glow effect */
+        input:focus, textarea:focus, select:focus {
+            box-shadow: 0 0 0 3px rgba(125, 20, 240, 0.5); /* Purple glow */
+            border-color: #7d14f0; /* Purple border */
+        }
+        .btn-ai-gradient {
+            background: linear-gradient(90deg, #7d14f0, #4c0d9a); /* Purple gradient */
+            transition: all 0.3s ease;
+        }
+        .btn-ai-gradient:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(90deg, #8a2be2, #5e1cb2);
+        }
+        .chart-upload-box {
+            border: 2px dashed #4a4a6a;
+            background-color: #1f1f3a;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chart-upload-box:hover {
+            border-color: #8a2be2;
+            background-color: #2a2a4a;
+        }
+        .chart-preview img {
+            max-width: 100%;
+            max-height: 200px; /* Limit height for preview */
+            border-radius: 8px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-gray-900 p-8 rounded-xl shadow-2xl w-full max-w-4xl border border-purple-800/50">
+        <h1 class="text-4xl font-extrabold text-center mb-6">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
+                Analisis Pasar Finansial AI
+            </span>
+        </h1>
+        <p class="text-center text-gray-400 mb-8 leading-relaxed">
+            Dapatkan wawasan pasar yang profesional dan mendalam untuk Crypto dan Emas
+            menggunakan kecerdasan buatan Gemini, didukung data real-time & analisis grafik.
+        </p>
+
+        <!-- Instructions Section -->
+        <div class="bg-purple-900/20 border border-purple-800/50 p-4 rounded-lg mb-8 text-sm text-purple-200">
+            <p class="font-bold mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                Panduan Penggunaan:
+            </p>
+            <ul class="list-disc pl-5">
+                <li>Pilih *cryptocurrency* yang ingin dianalisis. Harga akan diambil secara real-time.</li>
+                <li>**Unggah grafik harga** aset (gambar PNG/JPG) atau **tempel (Ctrl+V) gambar grafik** untuk analisis visual oleh AI.</li>
+                <li>Masukkan berita atau tren pasar relevan (opsional) untuk Crypto dan Emas.</li>
+                <li>Klik "Analisis Pasar dengan AI" untuk mendapatkan wawasan mendalam termasuk rekomendasi Buy/Sell/Hold.</li>
+            </ul>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Crypto Analysis Section -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-blue-900/50 shadow-lg">
+                <h3 class="text-2xl font-bold text-blue-300 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                    </svg>
+                    Analisis Crypto (Pilih Satu atau Lebih)
+                </h3>
+                <div class="mb-4">
+                    <label for="cryptoSelect" class="block text-gray-300 text-lg font-semibold mb-2">
+                        Pilih Aset untuk Analisis Komparatif:
+                    </label>
+                    <div id="cryptoSelectionGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <!-- Options will be dynamically inserted here by JS if needed, or hardcoded -->
+                        <div>
+                            <input type="checkbox" id="crypto-bitcoin" name="crypto" value="bitcoin" class="hidden peer">
+                            <label for="crypto-bitcoin" class="block cursor-pointer rounded-lg border-2 border-gray-700 p-3 text-center text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-700 peer-checked:border-purple-500 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:bg-purple-900/50">Bitcoin</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="crypto-ethereum" name="crypto" value="ethereum" class="hidden peer">
+                            <label for="crypto-ethereum" class="block cursor-pointer rounded-lg border-2 border-gray-700 p-3 text-center text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-700 peer-checked:border-purple-500 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:bg-purple-900/50">Ethereum</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="crypto-binancecoin" name="crypto" value="binancecoin" class="hidden peer">
+                            <label for="crypto-binancecoin" class="block cursor-pointer rounded-lg border-2 border-gray-700 p-3 text-center text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-700 peer-checked:border-purple-500 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:bg-purple-900/50">BNB</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="crypto-solana" name="crypto" value="solana" class="hidden peer">
+                            <label for="crypto-solana" class="block cursor-pointer rounded-lg border-2 border-gray-700 p-3 text-center text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-700 peer-checked:border-purple-500 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:bg-purple-900/50">Solana</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="crypto-ripple" name="crypto" value="ripple" class="hidden peer">
+                            <label for="crypto-ripple" class="block cursor-pointer rounded-lg border-2 border-gray-700 p-3 text-center text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-700 peer-checked:border-purple-500 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:bg-purple-900/50">XRP</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="cryptoRealtimePrice" class="hidden text-gray-300 text-lg font-semibold mb-2">
+                        Harga Saat Ini (USD) - Real-time:
+                    </label>
+                    <input type="text" id="cryptoRealtimePrice" placeholder="Harga akan ditampilkan di hasil analisis" readonly
+                           class="w-full px-4 py-3 border border-gray-700 bg-gray-900 text-white rounded-lg placeholder-gray-500 transition duration-200 ease-in-out cursor-not-allowed hidden">
+                </div>
+                <div>
+                    <label for="cryptoMarketNews" class="block text-gray-300 text-lg font-semibold mb-2">
+                        Berita/Tren Pasar Crypto (tempelkan artikel, cuitan, analisis - Opsional):
+                    </label>
+                    <textarea id="cryptoMarketNews" rows="6" placeholder="Contoh: Artikel tentang adopsi institusional, kebijakan regulasi baru, atau sentimen pasar terkini."
+                              class="w-full px-4 py-3 border border-gray-700 bg-gray-900 text-white rounded-lg placeholder-gray-500 resize-y transition duration-200 ease-in-out"></textarea>
+                </div>
+            </div>
+
+            <!-- Gold Analysis Section -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-yellow-900/50 shadow-lg">
+                <h3 class="text-2xl font-bold text-yellow-300 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-2 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.5 9a.5.5 0 000 1h6a.5.5 0 000-1h-6z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v2a1 1 0 102 0V4a1 1 0 00-1-1zM4 10a1 1 0 100-2H2a1 1 0 100 2h2zm12 0a1 1 0 100-2h-2a1 1 0 100 2h2z" clip-rule="evenodd" />
+                    </svg>
+                    Analisis Emas
+                </h3>
+                <div class="mb-4 text-gray-400 text-sm italic">
+                    *Harga real-time emas memerlukan API terpisah yang mungkin membutuhkan kunci API. Untuk demo ini, analisis emas akan berdasarkan berita yang Anda berikan.
+                </div>
+                <div>
+                    <label for="goldMarketNews" class="block text-gray-300 text-lg font-semibold mb-2">
+                        Berita/Tren Pasar Emas (tempelkan artikel, laporan ekonomi - Opsional):
+                    </label>
+                    <textarea id="goldMarketNews" rows="6" placeholder="Contoh: Laporan inflasi, keputusan suku bunga Fed, kondisi geopolitik global."
+                              class="w-full px-4 py-3 border border-gray-700 bg-gray-900 text-white rounded-lg placeholder-gray-500 resize-y transition duration-200 ease-in-out"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Upload Section -->
+        <div class="mb-8 p-6 rounded-lg border border-purple-700/50 bg-gray-800/50">
+            <h3 class="text-xl font-bold text-gray-200 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M4 8h16M4 12h16M4 16h16M4 20h16M11 6v12M13 6v12M6 8V6h2v2H6zm0 4v-2h2v2H6zm0 4v-2h2v2H6zm0 4v-2h2v2H6zm8-12V6h2v2h-2zm0 4v-2h2v2h-2zm0 4v-2h2v2h-2zm0 4v-2h2v2h-2z" />
+                </svg>
+                Unggah atau Tempel Grafik untuk Analisis Visual AI (Opsional)
+            </h3>
+            <label for="chartUpload" class="chart-upload-box rounded-lg cursor-pointer">
+                <input type="file" id="chartUpload" accept="image/png, image/jpeg" class="hidden">
+                <div id="chartPlaceholder" class="text-gray-500 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p>Seret & Lepas Gambar Grafik di Sini, atau Klik untuk Unggah</p>
+                    <p class="text-xs mt-1 font-bold text-purple-300">Atau Tempel (Ctrl+V) Gambar Grafik di Sini</p>
+                    <p class="text-xs mt-1">(Format: PNG, JPG)</p>
+                </div>
+                <div id="chartPreview" class="hidden mt-4">
+                    <img src="" alt="Chart Preview" class="mx-auto rounded-lg shadow-md">
+                    <p class="text-sm text-gray-400 mt-2 text-center" id="chartFileName"></p>
+                </div>
+            </label>
+        </div>
+
+
+        <button id="analyzeBtn"
+                class="btn-ai-gradient w-full flex items-center justify-center text-white font-bold py-3 px-6 rounded-lg text-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-500/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-2.907-3.792a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L10 14.414l-2.093 2.092a1 1 0 01-1.414-1.414l3-3zM10 6a1 1 0 100-2 1 1 0 000 2zm3.707 6.207a1 1 0 01-1.414 0L10 9.586l-2.093 2.092a1 1 0 01-1.414-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Analisis Pasar dengan AI
+        </button>
+
+        <div id="loadingIndicator" class="hidden text-center mt-6">
+            <div class="flex justify-center items-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                <p class="ml-3 text-lg text-gray-400">AI sedang menganalisis pasar...</p>
+            </div>
+        </div>
+
+        <div id="resultContainer" class="mt-8 hidden">
+            <h3 class="text-3xl font-bold text-gray-200 mb-6 text-center">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-500">
+                    AI Opportunity Score
+                </span>
+            </h3>
+
+            <!-- Multi-Timeframe Analysis Dashboard -->
+            <div id="multiTimeframeDashboard" class="flex flex-wrap gap-4 justify-center mb-8"></div>
+
+            <!-- Pattern Recognition Card -->
+            <div id="patternRecognitionCard" class="mb-8"></div>
+
+            <div id="opportunityScoreDashboard" class="space-y-4 mb-8">
+                <!-- AI will populate this area with ranked asset cards -->
+            </div>
+
+            <div id="detailedAnalysisSection" class="hidden">
+                <h4 class="text-2xl font-bold text-gray-200 mb-4 text-center">Analisis Mendalam</h4>
+                <div class="relative bg-gray-800 p-6 rounded-lg border border-purple-700/50 shadow-inner">
+                     <div id="aiAnalysisResult"
+                         class="w-full h-[450px] overflow-y-auto bg-transparent text-gray-300 text-base leading-relaxed focus:outline-none pr-4">
+                     </div>
+                     <button id="copyBtn" title="Salin Analisis Mendalam"
+                             class="absolute top-3 right-3 bg-gray-700 hover:bg-gray-600 text-gray-200 p-2 rounded-full shadow-md transition duration-200 ease-in-out">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                             <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                             <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                         </svg>
+                     </button>
+                     <div id="copySuccessMessage" class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-green-400 bg-green-900/50 px-3 py-1 rounded-full hidden">
+                         Disalin!
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="hidden mt-8 bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span id="errorText" class="block sm:inline">Terjadi kesalahan. Silakan coba lagi.</span>
+        </div>
+    </div>
+
+    <script>
+        // API Key for Gemini (used directly in frontend for Canvas preview, but proxied via backend in actual deployment)
+        const apiKey = "AIzaSyBJ3cFd100yNCi6GLZk4U621iWcfKxAW38"; // User provided API key
+
+        // DOM Elements
+        const cryptoCheckboxes = document.querySelectorAll('input[name="crypto"]');
+        const cryptoMarketNewsTextarea = document.getElementById('cryptoMarketNews');
+        const goldMarketNewsTextarea = document.getElementById('goldMarketNews');
+        const chartUploadInput = document.getElementById('chartUpload'); // New
+        const chartPlaceholder = document.getElementById('chartPlaceholder'); // New
+        const chartPreview = document.getElementById('chartPreview');     // New
+        const chartPreviewImg = chartPreview.querySelector('img'); // New
+        const chartFileNameSpan = document.getElementById('chartFileName'); // New
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultContainer = document.getElementById('resultContainer');
+        const opportunityScoreDashboard = document.getElementById('opportunityScoreDashboard');
+        const detailedAnalysisSection = document.getElementById('detailedAnalysisSection');
+        const aiAnalysisResultDiv = document.getElementById('aiAnalysisResult');
+        const copyBtn = document.getElementById('copyBtn');
+        const copySuccessMessage = document.getElementById('copySuccessMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const multiTimeframeDashboard = document.getElementById('multiTimeframeDashboard');
+        const patternRecognitionCard = document.getElementById('patternRecognitionCard');
+
+        // Backend URL (Change this if your backend is deployed elsewhere)
+        const BACKEND_URL = 'http://127.0.0.1:5000';
+
+        let uploadedChartBase64 = null; // To store the base64 string of the uploaded chart
+        let rawAnalysisText = ''; // To store raw text for the copy button
+
+        // Function to show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+        }
+
+        // Function to hide error message
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        // Helper function to render the opportunity score dashboard
+        function renderDashboard(rankedAssets) {
+            opportunityScoreDashboard.innerHTML = ''; // Clear previous results
+            if (!rankedAssets || rankedAssets.length === 0) return;
+
+            const scoreColors = {
+                high: 'text-green-400 border-green-500',   // 75-100
+                medium: 'text-yellow-400 border-yellow-500', // 40-74
+                low: 'text-red-400 border-red-500'      // 0-39
+            };
+
+            rankedAssets.forEach((asset, index) => {
+                let colorClass;
+                if (asset.score >= 75) {
+                    colorClass = scoreColors.high;
+                } else if (asset.score >= 40) {
+                    colorClass = scoreColors.medium;
+                } else {
+                    colorClass = scoreColors.low;
+                }
+
+                const strategyInfo = {
+                    'BUY': { icon: 'M12 4.5v15m7.5-7.5h-15', color: 'bg-green-500/20 text-green-300' },
+                    'HOLD': { icon: 'M3.75 9h16.5m-16.5 6.75h16.5', color: 'bg-yellow-500/20 text-yellow-300' },
+                    'SELL': { icon: 'M19.5 12h-15', color: 'bg-red-500/20 text-red-300' }
+                };
+
+                const currentStrategy = strategyInfo[asset.strategy.toUpperCase()] || strategyInfo['HOLD'];
+
+                const card = `
+                    <div class="bg-gray-800/80 p-5 rounded-lg border-l-4 ${colorClass.replace('text-', 'border-')} shadow-lg transition-transform duration-300 hover:scale-[1.02] hover:shadow-purple-500/20">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                            <div class="flex items-center mb-3 sm:mb-0">
+                                <span class="text-3xl font-bold text-purple-400 mr-4">#${index + 1}</span>
+                                <div>
+                                    <span class="text-2xl font-bold text-white">${asset.asset_name}</span>
+                                    ${asset.current_price ? `<span class="ml-2 text-md text-gray-400">@ $${parseFloat(asset.current_price).toLocaleString()}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-center px-3 py-1 rounded-full ${currentStrategy.color}">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="${currentStrategy.icon}" /></svg>
+                                    <span class="font-bold text-sm">${asset.strategy}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-sm text-gray-400">Opportunity Score</span>
+                                    <span class="text-3xl font-bold ${colorClass}">${asset.score}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 sm:pl-10 space-y-2">
+                           <p class="text-gray-300"><strong class="font-semibold text-purple-300">Alasan:</strong> ${asset.reason}</p>
+                           <p class="text-gray-300"><strong class="font-semibold text-purple-300">Durasi:</strong> ${asset.holding_period}</p>
+                        </div>
+                    </div>
+                `;
+                opportunityScoreDashboard.innerHTML += card;
+            });
+        }
+
+        // Helper function to convert Gemini's markdown-like response to styled HTML
+        function formatAnalysisToHtml(text) {
+            let processedText = text.replace(/^.*:\s*\n/,'');
+            const lines = processedText.split('\n');
+            let html = '';
+            let inScalpSection = false;
+            let scalpBuffer = [];
+
+            const icons = {
+                "Teknikal": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2 inline-block text-blue-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z\" /></svg>`,
+                "Fundamental": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2 inline-block text-blue-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6M7 8h6\" /></svg>`,
+                "Skenario": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2 inline-block text-blue-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\" /></svg>`,
+                "Entry": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-green-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 12h14m-7-7v14\" /></svg>`,
+                "Exit": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-blue-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19 12H5m7-7v14\" /></svg>`,
+                "Stop Loss": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-red-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\" /></svg>`,
+                "Take Profit": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-blue-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 13l4 4L19 7\" /></svg>`,
+                "Logika": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-yellow-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z\" /></svg>`,
+                "Risiko": `<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 inline-block text-orange-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\" /></svg>`
+            };
+
+            function renderScalpBlock(buffer) {
+                // buffer berisi array string seperti '- Entry: 150.10', '- Exit: ...', dst
+                let block = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 mb-4">';
+                buffer.forEach(line => {
+                    let match = line.match(/-\s*(Entry|Exit|Stop Loss|Take Profit|Logika|Risiko):\s*(.*)/i);
+                    if (match) {
+                        let label = match[1];
+                        let value = match[2];
+                        let color = '';
+                        if(label === 'Entry') color = 'bg-green-900/40 border-green-500';
+                        else if(label === 'Exit' || label === 'Take Profit') color = 'bg-blue-900/40 border-blue-500';
+                        else if(label === 'Stop Loss') color = 'bg-red-900/40 border-red-500';
+                        else if(label === 'Logika') color = 'bg-yellow-900/40 border-yellow-500';
+                        else if(label === 'Risiko') color = 'bg-orange-900/40 border-orange-500';
+                        block += `<div class="flex items-start border-l-4 ${color} rounded-lg p-3 mb-1">
+                            ${icons[label] || ''}
+                            <div>
+                                <span class="block font-bold mb-1">${label}</span>
+                                <span class="block text-gray-200">${value}</span>
+                            </div>
+                        </div>`;
+                    }
+                });
+                block += '</div>';
+                return block;
+            }
+
+            for(let i=0; i<lines.length; i++) {
+                const trimmedLine = lines[i].trim();
+                if (/^####\s*Rekomendasi Scalping/i.test(trimmedLine)) {
+                    html += `<h4 class="flex items-center text-lg font-bold text-pink-400 mt-6 mb-2"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 mr-2\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z\" /></svg>Rekomendasi Scalping</h4>`;
+                    inScalpSection = true;
+                    scalpBuffer = [];
+                    continue;
+                }
+                if (inScalpSection && (trimmedLine.startsWith('####') || trimmedLine.startsWith('###'))) {
+                    // End of scalping block
+                    html += renderScalpBlock(scalpBuffer);
+                    inScalpSection = false;
+                }
+                if (inScalpSection) {
+                    if (trimmedLine.startsWith('- ')) scalpBuffer.push(trimmedLine);
+                    continue;
+                }
+                if (trimmedLine.startsWith('####')) {
+                    let content = trimmedLine.replace(/#+/, '').trim();
+                    let icon = '';
+                    if(content.includes('Teknikal')) icon = icons['Teknikal'];
+                    else if(content.includes('Fundamental')) icon = icons['Fundamental'];
+                    else if(content.includes('Skenario')) icon = icons['Skenario'];
+                    html += `<h4 class="flex items-center text-lg font-semibold text-blue-300 mt-4 mb-2">${icon}${content}</h4>`;
+                }
+                else if (trimmedLine.startsWith('###')) {
+                    let content = trimmedLine.replace(/#+/, '').trim();
+                     html += `<h3 class="text-xl font-bold text-purple-300 mt-6 mb-3 border-b-2 border-purple-800/50 pb-2">${content}</h3>`;
+                }
+                else if (trimmedLine.startsWith('* ')) {
+                     const content = trimmedLine.substring(2);
+                     const styledContent = content.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-100">$1</strong>');
+                     html += `<li class="list-disc list-inside ml-4 mb-1">${styledContent}</li>`;
+                }
+                else if (trimmedLine) { // It's a paragraph
+                    const styledContent = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-100">$1</strong>');
+                    html += `<p class="text-gray-300 mb-3 leading-relaxed">${styledContent}</p>`;
+                }
+            }
+            if (inScalpSection) html += renderScalpBlock(scalpBuffer);
+            return html;
+        }
+
+        // Helper function to process image file/blob
+        function processImageFile(file, fileName = 'pasted_image.png') {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedChartBase64 = e.target.result.split(',')[1]; // Get only the base64 part
+                    chartPreviewImg.src = e.target.result;
+                    chartFileNameSpan.textContent = fileName;
+                    chartPlaceholder.classList.add('hidden');
+                    chartPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showError('Tipe file tidak didukung. Mohon unggah gambar (PNG/JPG).');
+                resetChartUpload();
+            }
+        }
+
+        function resetChartUpload() {
+            uploadedChartBase64 = null;
+            chartPreviewImg.src = '';
+            chartFileNameSpan.textContent = '';
+            chartPlaceholder.classList.remove('hidden');
+            chartPreview.classList.add('hidden');
+            chartUploadInput.value = ''; // Clear file input
+        }
+
+        // Handle chart file upload
+        chartUploadInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            processImageFile(file, file ? file.name : 'unknown_file');
+        });
+
+        // Handle drag and drop for chart upload
+        const chartUploadBox = document.querySelector('.chart-upload-box');
+        chartUploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chartUploadBox.classList.add('border-purple-500'); // Visual feedback
+        });
+
+        chartUploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chartUploadBox.classList.remove('border-purple-500');
+        });
+
+        chartUploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chartUploadBox.classList.remove('border-purple-500');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processImageFile(files[0], files[0].name);
+            }
+        });
+
+        // Handle paste event for chart upload
+        chartUploadBox.addEventListener('paste', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const clipboardItems = e.clipboardData.items;
+            for (let i = 0; i < clipboardItems.length; i++) {
+                const item = clipboardItems[i];
+                if (item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        processImageFile(blob, 'pasted_image.png'); // Name it as a pasted image
+                        return; // Process only the first image found
+                    }
+                }
+            }
+            showError('Tidak ada gambar yang ditemukan di clipboard untuk ditempel.');
+            resetChartUpload();
+        });
+
+
+        analyzeBtn.addEventListener('click', async () => {
+            hideError();
+            loadingIndicator.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            opportunityScoreDashboard.innerHTML = '';
+            aiAnalysisResultDiv.innerHTML = '';
+            detailedAnalysisSection.classList.add('hidden');
+
+            const selectedCryptoIds = Array.from(cryptoCheckboxes)
+                                           .filter(cb => cb.checked)
+                                           .map(cb => cb.value);
+
+            const cryptoMarketNews = cryptoMarketNewsTextarea.value.trim();
+            const goldMarketNews = goldMarketNewsTextarea.value.trim();
+
+            if (selectedCryptoIds.length === 0 && !goldMarketNews && !uploadedChartBase64) {
+                showError('Mohon pilih setidaknya satu aset Crypto, masukkan berita Emas, atau unggah grafik untuk dianalisis.');
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+
+            try {
+                // Prepare data to send to backend, including the base64 image data
+                const requestData = {
+                    cryptoIds: selectedCryptoIds, // Send an array of IDs
+                    cryptoMarketNews: cryptoMarketNews,
+                    goldMarketNews: goldMarketNews,
+                    chartImageBase64: uploadedChartBase64 // Send the base64 image
+                };
+
+                // Call the backend API for analysis
+                const response = await fetch(`${BACKEND_URL}/analyze_market`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                // NEW: Handle the new dashboard + detailed analysis format
+                if (result.ranked_assets) {
+                    renderDashboard(result.ranked_assets);
+                    resultContainer.classList.remove('hidden');
+                    resetChartUpload();
+                } else {
+                     showError('Gagal menghasilkan Analisis Peringkat Aset. Respons dari backend tidak lengkap.');
+                }
+                
+                if(result.detailed_analysis) {
+                    rawAnalysisText = result.detailed_analysis; // Store raw text for copying
+                    const formattedHtml = formatAnalysisToHtml(result.detailed_analysis);
+                    aiAnalysisResultDiv.innerHTML = formattedHtml;
+                    detailedAnalysisSection.classList.remove('hidden');
+                }
+
+                if (result.multi_timeframe_analysis) {
+                    renderMultiTimeframeDashboard(result.multi_timeframe_analysis);
+                } else {
+                    multiTimeframeDashboard.innerHTML = '';
+                }
+                if (result.pattern_recognition) {
+                    renderPatternRecognitionCard(result.pattern_recognition);
+                } else {
+                    patternRecognitionCard.innerHTML = '';
+                }
+
+            } catch (error) {
+                console.error('Error during analysis:', error);
+                showError(`Gagal menghubungi backend atau terjadi kesalahan: ${error.message}`);
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Copy to clipboard functionality
+        copyBtn.addEventListener('click', () => {
+            // Use the stored raw text for a clean copy
+            navigator.clipboard.writeText(rawAnalysisText).then(() => {
+                copySuccessMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    copySuccessMessage.classList.add('hidden');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text:', err);
+                 // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = rawAnalysisText;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copySuccessMessage.classList.remove('hidden');
+                    setTimeout(() => {
+                        copySuccessMessage.classList.add('hidden');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        });
+
+        function renderMultiTimeframeDashboard(timeframes) {
+            multiTimeframeDashboard.innerHTML = '';
+            if (!Array.isArray(timeframes) || timeframes.length === 0) return;
+            const signalColors = {
+                'BUY': 'bg-green-700/80 text-green-200',
+                'SELL': 'bg-red-700/80 text-red-200',
+                'HOLD': 'bg-yellow-700/80 text-yellow-200',
+                'NETRAL': 'bg-gray-700/80 text-gray-200'
+            };
+            timeframes.forEach(tf => {
+                const color = signalColors[tf.signal?.toUpperCase()] || 'bg-gray-700/80 text-gray-200';
+                multiTimeframeDashboard.innerHTML += `
+                    <div class="min-w-[220px] max-w-xs flex-1 p-4 rounded-lg shadow-lg border-2 border-purple-700/40 ${color} flex flex-col items-start">
+                        <div class="font-bold text-lg mb-1">${tf.timeframe || '-'}</div>
+                        <div class="flex items-center mb-2">
+                            <span class="font-bold text-xl mr-2">${tf.signal || '-'}</span>
+                            <span class="text-xs px-2 py-1 rounded-full bg-purple-900/40 border border-purple-700 ml-2">Risiko: ${tf.risk || '-'}</span>
+                        </div>
+                        <div class="text-sm text-gray-100">${tf.reason || '-'}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderPatternRecognitionCard(patterns) {
+            patternRecognitionCard.innerHTML = '';
+            if (!Array.isArray(patterns)) return;
+            if (patterns.length === 0) {
+                patternRecognitionCard.innerHTML = `<div class="bg-gray-800/80 border-l-4 border-purple-500 p-4 rounded-lg text-gray-300 text-center font-semibold">Tidak ada pola signifikan terdeteksi pada chart.</div>`;
+                return;
+            }
+            patternRecognitionCard.innerHTML = `
+                <div class="bg-gray-800/80 border-l-4 border-blue-500 p-4 rounded-lg">
+                    <div class="font-bold text-lg text-blue-300 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2" /></svg>
+                        Deteksi Pola Chart Otomatis
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        ${patterns.map(p => `
+                            <div class="bg-blue-900/40 border border-blue-500 rounded-lg p-3 min-w-[180px] flex-1">
+                                <div class="font-bold text-blue-200 text-md mb-1">${p.pattern}</div>
+                                <div class="text-xs mb-1">Confidence: <span class="font-semibold">${p.confidence}%</span></div>
+                                <div class="text-sm text-gray-100">${p.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
